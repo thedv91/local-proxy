@@ -4,6 +4,14 @@
   "description": "Local dev proxy on Bun that puts remote APIs behind their own https://*.localhost domains via portless, with local CORS, cookie and redirect rewrites, WebSockets, and a small web UI.",
   "author": "Harry <thedv91@gmail.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thedv91/local-proxy.git"
+  },
+  "homepage": "https://github.com/thedv91/local-proxy#readme",
+  "bugs": {
+    "url": "https://github.com/thedv91/local-proxy/issues"
+  },
   "keywords": [
     "bun",
     "proxy",

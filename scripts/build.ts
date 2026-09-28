@@ -4,23 +4,27 @@ import tailwind from "bun-plugin-tailwind";
 
 // The published package serves this build: bunfig.toml (and its Tailwind
 // plugin) only applies when Bun runs from this repo, not from node_modules.
-const outdir = join(import.meta.dir, "..", "dist", "web");
+export const DEFAULT_OUTDIR = join(import.meta.dir, "..", "dist", "web");
 
-await rm(outdir, { recursive: true, force: true });
-const result = await Bun.build({
-  entrypoints: [join(import.meta.dir, "..", "src", "web", "index.html")],
-  outdir,
-  plugins: [tailwind],
-  minify: true,
-  target: "browser",
-  define: { "process.env.NODE_ENV": JSON.stringify("production") },
-});
-if (!result.success) {
-  for (const log of result.logs) {
-    console.error(log);
+export async function buildUi(outdir: string) {
+  await rm(outdir, { recursive: true, force: true });
+  const result = await Bun.build({
+    entrypoints: [join(import.meta.dir, "..", "src", "web", "index.html")],
+    outdir,
+    plugins: [tailwind],
+    minify: true,
+    target: "browser",
+    define: { "process.env.NODE_ENV": JSON.stringify("production") },
+  });
+  if (!result.success) {
+    throw new AggregateError(result.logs, "UI build failed");
   }
-  process.exit(1);
+  return result.outputs;
 }
-for (const output of result.outputs) {
-  console.log(`${output.path.slice(outdir.length + 1)}  ${(output.size / 1024).toFixed(1)} KB`);
+
+if (import.meta.main) {
+  for (const output of await buildUi(DEFAULT_OUTDIR)) {
+    const name = output.path.slice(DEFAULT_OUTDIR.length + 1);
+    console.log(`${name}  ${(output.size / 1024).toFixed(1)} KB`);
+  }
 }

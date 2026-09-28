@@ -1,0 +1,19 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "local-proxy dev",
+      "runtimeExecutable": "bun",
+      "runtimeArgs": ["dev"],
+      "port": 7777,
+      "url": "http://127.0.0.1:7777"
+    },
+    {
+      "name": "local-proxy bin",
+      "runtimeExecutable": "bun",
+      "runtimeArgs": ["bin/local-proxy.ts"],
+      "port": 7777,
+      "url": "http://127.0.0.1:7777"
+    }
+  ]
+}

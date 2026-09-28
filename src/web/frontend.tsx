@@ -8,7 +8,10 @@ const app = (
   </StrictMode>
 );
 
-// Reuse the root across hot reloads: https://bun.com/docs/bundler/hot-reloading#import-meta-hot-data
 const rootElement = document.getElementById("root") as HTMLElement;
-import.meta.hot.data.root ??= createRoot(rootElement);
-import.meta.hot.data.root.render(app);
+// Reuse the root across hot reloads: https://bun.com/docs/bundler/hot-reloading#import-meta-hot-data
+// Keep this exact one-expression form. Production builds rewrite it to
+// createRoot(rootElement).render(app); split into two statements, the build
+// leaves `root` undefined and the page stays blank.
+// biome-ignore lint/suspicious/noAssignInExpressions: see above
+(import.meta.hot.data.root ??= createRoot(rootElement)).render(app);

@@ -1,0 +1,35 @@
+name: Publish
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+  # Trusted publishing: npm exchanges this OIDC token for a short-lived publish
+  # token, so no NPM_TOKEN secret is needed.
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      # Publishing goes through npm, not `bun publish`: trusted publishing needs
+      # npm CLI >= 11.5.1, which Node 24 ships.
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+
+      - run: bun install --frozen-lockfile
+      - run: bun run typecheck
+      - run: bun test
+
+      # `prepack` runs `bun run build`, so dist/ is built right before packing.
+      - run: npm publish
