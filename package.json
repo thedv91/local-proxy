@@ -1,6 +1,6 @@
 {
   "name": "local-api-proxy",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Local dev proxy on Bun that puts remote APIs behind their own https://*.localhost domains via portless, with local CORS, cookie and redirect rewrites, WebSockets, and a small web UI.",
   "author": "Harry <thedv91@gmail.com>",
   "license": "MIT",
