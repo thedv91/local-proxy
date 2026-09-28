@@ -10,8 +10,15 @@ Requires Bun 1.4 and Node 24 (for portless).
 
 ```sh
 npm install -g portless
-bun install
 ```
+
+local-proxy is published as `local-api-proxy`. Run it without installing:
+
+```sh
+bunx local-api-proxy
+```
+
+`npx local-api-proxy` also works when Bun is on your PATH: the `local-proxy` command runs its TypeScript with Bun. To keep the command around, install it globally with `bun add -g local-api-proxy` and run `local-proxy`.
 
 ## Start portless
 
@@ -31,11 +38,12 @@ portless proxy start --tld localhost --tld test
 ## Run local-proxy
 
 ```sh
-bun start     # production mode
-bun dev       # UI hot reload; restart it after backend changes
+local-proxy              # or: bunx local-api-proxy
+local-proxy --port 8080  # admin UI and API on another port
+local-proxy --help
 ```
 
-The admin UI and JSON API listen on http://127.0.0.1:7777. local-proxy also registers itself as https://local-proxy.localhost.
+The admin UI and JSON API listen on http://127.0.0.1:7777 unless `--port` says otherwise. local-proxy also registers itself as https://local-proxy.localhost.
 
 On startup it starts every enabled record and registers its alias again. Ctrl+C (SIGINT) or SIGTERM removes the aliases it registered. Records and the request log live in a SQLite database, `~/.config/local-proxy/local-proxy.db`. If a `records.json` from an earlier version is there, its records are imported on the first start and the file is renamed to `records.json.imported`.
 
@@ -97,8 +105,16 @@ NODE_EXTRA_CA_CERTS=~/.portless/ca.pem node server.js
 ## Development
 
 ```sh
+bun install
+bun dev             # from this repo, with UI hot reload; restart it after backend changes
+bun start           # from this repo, production mode
+bun run build       # bundle the UI with Tailwind into dist/web (runs before npm pack/publish)
 bun test            # unit, integration and UI tests
 bun run typecheck   # tsc --noEmit
 bun run lint        # Biome lint and format check
 bun run format      # Biome, applying fixes
 ```
+
+## License
+
+MIT. See [LICENSE](LICENSE).

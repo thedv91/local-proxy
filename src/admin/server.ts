@@ -1,16 +1,24 @@
-import type { BunRequest } from "bun";
+import { readdirSync } from "node:fs";
+import { join } from "node:path";
+import type { BunRequest, HTMLBundle } from "bun";
 import { type LocalProxy, ValidationError } from "../local-proxy";
 import { RecordNotFoundError } from "../records/store";
-import index from "../web/index.html";
+
+/**
+ * The admin UI: Bun's HTML import when running from the repo (bundled on the
+ * fly, with HMR in dev), or the directory scripts/build.ts wrote, for the
+ * published package.
+ */
+export type AdminUi = HTMLBundle | { builtDir: string };
 
 /** Admin UI and JSON API on 127.0.0.1 only. */
-export function startAdminServer(localProxy: LocalProxy, port: number) {
+export function startAdminServer(localProxy: LocalProxy, port: number, ui: AdminUi) {
   return Bun.serve({
     hostname: "127.0.0.1",
     port,
     development: process.env.NODE_ENV !== "production" && { hmr: true, console: true },
     routes: {
-      "/": index,
+      ...uiRoutes(ui),
       "/api/records": {
         GET: () => Response.json(localProxy.listRecords()),
         POST: (request) =>
@@ -43,6 +51,19 @@ export function startAdminServer(localProxy: LocalProxy, port: number) {
       },
     },
   });
+}
+
+function uiRoutes(ui: AdminUi): Record<string, HTMLBundle | Response> {
+  if (!("builtDir" in ui)) {
+    return { "/": ui };
+  }
+  const routes: Record<string, Response> = {};
+  for (const file of readdirSync(ui.builtDir)) {
+    routes[file === "index.html" ? "/" : `/${file}`] = new Response(
+      Bun.file(join(ui.builtDir, file)),
+    );
+  }
+  return routes;
 }
 
 /**

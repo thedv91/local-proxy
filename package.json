@@ -1,22 +1,45 @@
 {
-  "name": "local-proxy",
+  "name": "local-api-proxy",
   "version": "0.1.0",
   "description": "Local dev proxy on Bun that puts remote APIs behind their own https://*.localhost domains via portless, with local CORS, cookie and redirect rewrites, WebSockets, and a small web UI.",
   "author": "Harry <thedv91@gmail.com>",
-  "private": true,
+  "license": "MIT",
+  "keywords": [
+    "bun",
+    "proxy",
+    "reverse-proxy",
+    "cors",
+    "localhost",
+    "https",
+    "websocket",
+    "portless"
+  ],
   "type": "module",
+  "bin": {
+    "local-proxy": "bin/local-proxy.ts"
+  },
+  "files": [
+    "bin",
+    "!bin/*.test.ts",
+    "src",
+    "!src/**/*.test.ts",
+    "!src/**/*.test.tsx",
+    "!src/web/test-dom.ts",
+    "dist"
+  ],
+  "engines": {
+    "bun": ">=1.4"
+  },
   "scripts": {
     "dev": "bun src/index.ts",
     "start": "NODE_ENV=production bun src/index.ts",
+    "build": "bun scripts/build.ts",
+    "prepack": "bun run build",
     "typecheck": "tsc --noEmit",
     "lint": "biome check .",
     "format": "biome check --write ."
   },
   "dependencies": {
-    "bun-plugin-tailwind": "^0.1.2",
-    "react": "^19",
-    "react-dom": "^19",
-    "tailwindcss": "^4.1.11",
     "zod": "^4.6.5"
   },
   "devDependencies": {
@@ -28,7 +51,11 @@
     "@types/bun": "latest",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "bun-plugin-tailwind": "^0.1.2",
     "happy-dom": "^20.14.5",
+    "react": "^19",
+    "react-dom": "^19",
+    "tailwindcss": "^4.1.11",
     "typescript": "^7.0.2"
   }
 }
